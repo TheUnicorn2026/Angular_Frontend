@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html ng-app="userApp">
+<head>
+    <title>User Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body ng-controller="UserController">
+    <h1>User Management</h1>
+
+    <h2>Add New User</h2>
+    <form ng-submit="addUser()">
+        <input type="text" ng-model="newUser.username" placeholder="Username" required>
+        <input type="email" ng-model="newUser.email" placeholder="Email" required>
+        <input type="text" ng-model="newUser.first_name" placeholder="First Name">
+        <input type="text" ng-model="newUser.last_name" placeholder="Last Name">
+        <button type="submit">Add User</button>
+    </form>
+
+    <h2>Users</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="user in users">
+                <td>{{ user.id }}</td>
+                <td><input type="text" ng-model="user.username" ng-show="user.editing"></td>
+                <td><input type="email" ng-model="user.email" ng-show="user.editing"></td>
+                <td><input type="text" ng-model="user.first_name" ng-show="user.editing"></td>
+                <td><input type="text" ng-model="user.last_name" ng-show="user.editing"></td>
+                <td>{{ user.is_active }}</td>
+                <td>
+                    <button ng-click="editUser(user)" ng-hide="user.editing">Edit</button>
+                    <button ng-click="saveUser(user)" ng-show="user.editing">Save</button>
+                    <button ng-click="cancelEdit(user)" ng-show="user.editing">Cancel</button>
+                    <button ng-click="deleteUser(user)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        angular.module('userApp', [])
+            .controller('UserController', function($scope, $http) {
+                $scope.users = [];
+                $scope.newUser = {};
+
+                // Load users
+                $scope.loadUsers = function() {
+                    $http.get('http://localhost:8000/api/users/')
+                        .then(function(response) {
+                            $scope.users = response.data;
+                        })
+                        .catch(function(error) {
+                            console.error('Error loading users:', error);
+                        });
+                };
+
+                // Add user
+                $scope.addUser = function() {
+                    $http.post('http://localhost:8000/api/users/', $scope.newUser)
+                        .then(function(response) {
+                            $scope.users.push(response.data);
+                            $scope.newUser = {};
+                        })
+                        .catch(function(error) {
+                            console.error('Error adding user:', error);
+                        });
+                };
+
+                // Edit user
+                $scope.editUser = function(user) {
+                    user.original = angular.copy(user);
+                    user.editing = true;
+                };
+
+                // Save user
+                $scope.saveUser = function(user) {
+                    $http.put('http://localhost:8000/api/users/' + user.id + '/', user)
+                        .then(function(response) {
+                            user.editing = false;
+                            delete user.original;
+                        })
+                        .catch(function(error) {
+                            console.error('Error saving user:', error);
+                        });
+                };
+
+                // Cancel edit
+                $scope.cancelEdit = function(user) {
+                    angular.copy(user.original, user);
+                    user.editing = false;
+                    delete user.original;
+                };
+
+                // Delete user
+                $scope.deleteUser = function(user) {
+                    if (confirm('Are you sure you want to delete this user?')) {
+                        $http.delete('http://localhost:8000/api/users/' + user.id + '/')
+                            .then(function() {
+                                var index = $scope.users.indexOf(user);
+                                $scope.users.splice(index, 1);
+                            })
+                            .catch(function(error) {
+                                console.error('Error deleting user:', error);
+                            });
+                    }
+                };
+
+                // Initial load
+                $scope.loadUsers();
+            });
+    </script>
+</body>
+</html>
