@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="authApp">
+
+<head>
+  <meta charset="UTF-8">
+  <title>{{ isLogin ? 'Login' : 'Register' }}</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+</head>
+
+<body ng-controller="LoginController">
+
+  <div class="container mt-5" style="max-width: 400px;">
+    <h3 class="text-center mb-4"> {{ isLogin ? 'Login' : 'Register' }} </h3>
+
+    <form ng-submit="submitForm($event)"> <!-- Passing event to submitForm -->
+      <!-- Name field (only visible during registration) -->
+      <div class="mb-3" ng-if="!isLogin">
+        <label>Name</label>
+        <input type="text" class="form-control" ng-model="user.name" required>
+      </div>
+
+      <!-- Email field (always visible) -->
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control" ng-model="user.email" required>
+      </div>
+
+      <!-- Password field -->
+      <div class="mb-3">
+        <label>Password</label>
+        <input type="password" class="form-control" ng-model="user.password" required>
+      </div>
+
+      <!-- Phone field (only visible during registration) -->
+      <div class="mb-3" ng-if="!isLogin">
+        <label>Phone</label>
+        <input type="text" class="form-control" ng-model="user.phone" required>
+      </div>
+
+      <!-- Type field (only visible during registration) -->
+      <div class="mb-3" ng-if="!isLogin">
+        <label>Type</label>
+        <input type="text" class="form-control" ng-model="user.type" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">
+        {{ isLogin ? 'Login' : 'Register' }}
+      </button>
+
+      <!-- forgot password -->
+      <!-- <div class="text-center mt-2" ng-if="isLogin">
+  <a href="" ng-click="forgotPassword()">Forgot Password?</a> -->
+
+
+  </div>
+
+
+  </form>
+
+  <div class="text-center mt-3" ng-click="forgotPassword()" ng-if="isLogin">
+    <!-- {{ isLogin ? 'forgotPassword' : '0' }} -->
+    <a href="" ng-click="forgotPassword()"> Forgot Password</a>
+  </div>
+
+
+  <div class="text-center mt-3">
+    <a href="" ng-click="toggleForm()">
+      {{ isLogin ? 'Create an account' : 'Already have an account?' }}
+    </a>
+  </div>
+
+  <!-- Display the response message -->
+  <div class="alert alert-info mt-3" ng-if="message">
+    {{ message }}
+  </div>
+
+  <!-- Display the registration response data in a table format -->
+  <div class="mt-3" ng-if="data && !isLogin">
+    <h4>User Data</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Name</td>
+          <td>{{ data.name }}</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{{ data.email }}</td>
+        </tr>
+        <tr>
+          <td>Phone</td>
+          <td>{{ data.phone }}</td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td>{{ data.type }}</td>
+        </tr>
+        <tr>
+          <td>Created At</td>
+          <td>{{ data.created_at }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  </div>
+
+  <!-- Link to login.js -->
+  <script src="js/login.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,139 @@
+{
+"name" : "laxmi",
+"email" : "laxmi@gmail.com",
+"password" : "abc@123",
+"type" : "staff",
+"phone" : "1234567899"
+}
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.hashers import make_password
+
+from .models import User
+
+class ResetPasswordAPI(APIView):
+    def post(self, request):
+
+        email = request.data.get("email")
+        otp = request.data.get("otp")
+        new_password = request.data.get("new_password")
+
+        if not email or not otp or not new_password:
+            return Response(
+                {"error": "All fields are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # ✅ OTP CHECK (string compare)
+        if str(otp) != str(user.password):
+            return Response(
+                {"error": "Invalid OTP"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # ✅ SAVE NEW PASSWORD
+        user.password = make_password(new_password)
+        user.save()
+
+        return Response(
+            {"message": "Password reset successful"},
+            status=status.HTTP_200_OK
+        )
+
+
+
+
+
+KEN/getUpdates" | jq
+{
+  "ok": true,
+  "result": [
+    {
+      "update_id": 354117301,
+      "message": {
+        "message_id": 15,
+        "from": {
+          "id": 1204155666,
+          "is_bot": false,
+          "first_name": "L",
+          "last_name": "K",
+          "language_code": "en"
+        },
+        "chat": {
+          "id": 1204155666,
+          "first_name": "L",
+          "last_name": "K",
+          "type": "private"
+        },
+        "date": 1768283943,
+        "text": "/start",
+        "entities": [
+          {
+            "offset": 0,
+            "length": 6,
+            "type": "bot_command"
+          }
+        ]
+      }
+    },
+    {
+      "update_id": 354117302,
+      "message": {
+        "message_id": 16,
+        "from": {
+          "id": 1204155666,
+          "is_bot": false,
+          "first_name": "L",
+          "last_name": "K",
+          "language_code": "en"
+        },
+        "chat": {
+          "id": 1204155666,
+          "first_name": "L",
+          "last_name": "K",
+          "type": "private"
+        },
+        "date": 1768284379,
+        "text": "Hii"
+      }
+    },
+    {
+      "update_id": 354117303,
+      "message": {
+        "message_id": 22,
+        "from": {
+          "id": 1204155666,
+          "is_bot": false,
+          "first_name": "L",
+          "last_name": "K",
+          "language_code": "en"
+        },
+        "chat": {
+          "id": 1204155666,
+          "first_name": "L",
+          "last_name": "K",
+          "type": "private"
+        },
+        "date": 1768294898,
+        "text": "/start",
+        "entities": [
+          {
+            "offset": 0,
+            "length": 6,
+            "type": "bot_command"
+          }
+        ]
+      }
+    }
+  ]
+}
